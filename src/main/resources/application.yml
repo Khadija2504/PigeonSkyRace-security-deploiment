@@ -22,4 +22,10 @@ jwt:
     time: 3600000
 
 server:
-  port: 8082
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:mykeystore.p12
+    key-store-password: 123456789
+    key-store-type: PKCS12
+    key-alias: PigeonSkyRace
