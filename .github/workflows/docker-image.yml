@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
 
 env:
-  DOCKER_HUB_REPO: ${{ secrets.DOCKER_HUB_USERNAME }}/gestioncontrat
+  DOCKER_HUB_REPO: ${{ secrets.DOCKER_HUB_USERNAME }}/pigeonskyracesecurity
 
 jobs:
   build-and-deploy:
@@ -70,7 +70,7 @@ jobs:
                 - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
             gestioncontrat:
               image: ${{ env.DOCKER_HUB_REPO }}:${{ github.sha }}
-              container_name: gestioncontrat
+              container_name: pigeonskyracesecurity
               ports:
                 - "8081:8080"
               depends_on:
