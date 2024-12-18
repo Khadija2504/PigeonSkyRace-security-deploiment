@@ -15,6 +15,19 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: spring-boot-app
+            client-secret: tug1j4FPcCHIDb240zRMdrZaiH3QpcoY
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8443/login/oauth2/code/keycloak
+            scope: openid, profile, email
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8188/realms/PigeonSkyRace
 
 jwt:
   secret: f6fbccba3855c01297f5c39e8bd5ef9c4ad57a44c9d3d26032162f59daec4a8c
