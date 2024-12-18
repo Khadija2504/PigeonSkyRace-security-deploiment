@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,7 @@ public class BreederController {
     private PigeonMapper pigeonMapper;
 
     @PostMapping("/addPigeon")
+    @PreAuthorize("hasRole('BREEDER')")
     public ResponseEntity<?> addPigeon(HttpServletRequest request, @Valid @RequestBody PigeonDTO pigeonDTO, BindingResult result) {
 
         if (result.hasErrors()) {
@@ -67,6 +69,7 @@ public class BreederController {
     }
 
     @GetMapping("/getAllPigeons")
+    @PreAuthorize("hasRole('BREEDER')")
     public ResponseEntity<List<Pigeon>> getAllPigeons() {
         List<Pigeon> pigeons = pigeonService.getAllPigeons();
         return ResponseEntity.status(HttpStatus.OK).body(pigeons);
@@ -81,6 +84,7 @@ public class BreederController {
     }
 
     @GetMapping("/exportResults")
+    @PreAuthorize("hasRole('BREEDER')")
     public ResponseEntity<?> exportResults(HttpServletResponse response, HttpServletRequest request) throws DocumentException, IOException {
 
         response.setContentType("application/pdf");
@@ -100,6 +104,7 @@ public class BreederController {
     }
 
     @GetMapping("/exportAllResults")
+    @PreAuthorize("hasRole('BREEDER')")
     public ResponseEntity<?> exportAllResults(HttpServletResponse response /* , HttpServletRequest request*/) throws DocumentException, IOException {
 //        ResponseEntity<String> validationResponse = validateUser(request);
 //        if (validationResponse != null) {

@@ -45,7 +45,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/breeder/addPigeon").hasRole("BREEDER")
                         .requestMatchers("/api/organizer/**").hasRole("ORGANIZER")
+                        .requestMatchers("/public/hello").permitAll()
+                        .requestMatchers("/secured/username").permitAll()
+                        .requestMatchers("/oauth/secured/username").permitAll()
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth2/authorization/keycloak")
                 )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(customAuthenticationEntryPoint)

@@ -1,0 +1,26 @@
+{
+  "realm": "my-realm",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "my-spring-boot-app",
+      "enabled": true,
+      "publicClient": false,
+      "redirectUris": ["http://localhost:8080/*"],
+      "secret": "my-client-secret",
+      "authorizationServicesEnabled": true
+    }
+  ],
+  "users": [
+    {
+      "username": "testuser",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "testpassword"
+        }
+      ]
+    }
+  ]
+}
