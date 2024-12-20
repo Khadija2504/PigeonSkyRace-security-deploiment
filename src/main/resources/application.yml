@@ -28,6 +28,7 @@ spring:
         provider:
           keycloak:
             issuer-uri: http://localhost:8188/realms/PigeonSkyRace
+            jwk-set-uri: http://localhost:8188/realms/PigeonSkyRace/protocol/openid-connect/certs
 
 jwt:
   secret: f6fbccba3855c01297f5c39e8bd5ef9c4ad57a44c9d3d26032162f59daec4a8c

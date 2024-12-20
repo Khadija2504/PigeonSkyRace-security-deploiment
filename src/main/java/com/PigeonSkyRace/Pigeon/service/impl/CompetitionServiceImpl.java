@@ -30,7 +30,7 @@ public class CompetitionServiceImpl implements com.PigeonSkyRace.Pigeon.service.
     @Override
 
     public Optional<Result> updateCompetition(int id, String badge) {
-        Pigeon pigeons = pigeonRepository.findByBadge(badge).getFirst();
+        Pigeon pigeons = (Pigeon) pigeonRepository.findByBadge(badge);
         Optional<Competition> competitionResult = competitionRepository.findById(id);
 
         if (competitionResult.isPresent() && competitionResult.get().getIsOpen().equals(true)) {
