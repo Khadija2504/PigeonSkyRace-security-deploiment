@@ -3,11 +3,11 @@ package com.PigeonSkyRace.Pigeon.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.RSAKeyProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,9 +23,7 @@ import java.util.logging.Logger;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final Logger logger = Logger.getLogger(JwtRequestFilter.class.getName());
-
-    @Value("${jwt.secret}")
-    private String jwtSecret;
+    private final RSAKeyProvider keyProvider = new KeycloakJwkProvider("http://localhost:8188/realms/PigeonSkyRace/protocol/openid-connect/certs");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -35,23 +33,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
             try {
-                DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(jwtSecret))
+                DecodedJWT decodedJWT = JWT.require(Algorithm.RSA256(keyProvider))
                         .build()
                         .verify(token);
 
-                Integer userId = decodedJWT.getClaim("userId").asInt();
+                String userId = decodedJWT.getClaim("userId").asString();
                 String role = decodedJWT.getClaim("role").asString();
 
                 if (userId != null && role != null) {
-                    request.setAttribute("userId", userId.toString());
+                    request.setAttribute("userId", userId);
                     request.setAttribute("role", role);
 
                     List<SimpleGrantedAuthority> authorities =
                             Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
-                    logger.info("JWT Role Claim: " + role);
-                    logger.info("Assigned Authority: ROLE_" + role.toUpperCase());
                     UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(userId.toString(), null, authorities);
+                            new UsernamePasswordAuthenticationToken(userId, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     logger.warning("Missing required claims: userId or role");
@@ -67,7 +63,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         chain.doFilter(request, response);
     }
-
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {

@@ -10,6 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,6 +28,12 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
+    }
+
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        return NimbusJwtDecoder.withJwkSetUri("http://localhost:8188/realms/PigeonSkyRace/protocol/openid-connect/certs")
+                .build();
     }
 
     @Bean
@@ -53,6 +62,9 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/oauth2/authorization/keycloak")
                 )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler)
@@ -71,7 +83,11 @@ public class SecurityConfig {
         return http.build();
     }
 
-
+    private JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setPrincipalClaimName("preferred_username");
+        return converter;
+    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
